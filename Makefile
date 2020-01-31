@@ -34,6 +34,7 @@ SKETCH_FILE   = $(shell find $(CURDIR) -name "*.ino" -type f | sort | head -n1)
 SKETCH_NAME   = $(shell basename $(SKETCH_FILE:.ino=))
 MONITOR_SPEED = $(shell egrep 'Serial.begin\([0-9]+\)' $(SKETCH_FILE) | head -n1 | perl -pE 's/\D+//g')
 BUILD_DIR     = /tmp/arduino-build-$(SKETCH_NAME)/
+BINARY        = $(CURDIR)/$(SKETCH_NAME).bin
 
 # If the SKETCH_FILE == ""
 ifeq ($(SKETCH_FILE),)
@@ -63,10 +64,11 @@ binary: default
 	@echo
 	cp $(BUILD_DIR)/$(SKETCH_NAME).ino.bin $(CURDIR)/$(SKETCH_NAME).bin
 	@echo
-	@echo "Binary: $(CURDIR)/$(SKETCH_NAME).bin"
+	@echo "Binary: $(BINARY)"
 
 clean:
-	$(RM) $(BUILD_DIR)
+	# Make sure BUILD_DIR is not an empty string, and then remove it
+	test -n "$(BUILD_DIR)" && $(RM) -r $(BUILD_DIR)
 
 display_config:
 	@echo "BOARD         : $(BOARD)"

@@ -62,6 +62,7 @@ void loop() {
 		last_report = is_on;
 	}
 
+	webota.handle();
 	webota.delay(200);
 
 	first = false;

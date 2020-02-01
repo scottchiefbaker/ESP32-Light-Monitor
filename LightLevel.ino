@@ -3,8 +3,18 @@
 WiFiManager wifiManager;
 String MAC = "";
 
-#include <HTTPClient.h>
+#if defined ESP32
+	#include <HTTPClient.h>
+#elif defined ESP8266
+	#include <ESP8266WiFi.h>
+	#include <ESP8266HTTPClient.h>
+#else
+	#error An ESP8266/ESP32 is required to build this code
+#endif
 HTTPClient http;
+
+#include <WiFiClient.h>
+WiFiClient wclient;
 
 // https://github.com/scottchiefbaker/ESP-WebOTA
 #include <WebOTA.h>
@@ -78,7 +88,7 @@ int phone_home(bool is_on) {
 		snprintf(url, 100,"http://scott.web-ster.com/api/lights.php?status=off&mac=%s", MAC.c_str());
 	}
 
-	http.begin(url);
+	http.begin(wclient, url);
 	int httpCode = http.GET();
 	//String payload = http.getString();
 	http.end();
@@ -110,7 +120,7 @@ int log_message(const char* msg) {
 		}
 	}
 
-	http.begin(url);
+	http.begin(wclient, url);
 	int httpCode = http.GET();
 	//String payload = http.getString();
 	http.end();
